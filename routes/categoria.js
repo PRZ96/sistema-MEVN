@@ -9,7 +9,7 @@ router.get("/query", CategoriaController.query);
 router.get("/list", CategoriaController.list);
 router.put("/update", CategoriaController.update);
 router.delete("/remove", CategoriaController.remove);
-router.put("/activave", CategoriaController.activate);
+router.put("/activate", CategoriaController.activate);
 router.put("/deactivate", CategoriaController.deactivate);
 
 export default router;
