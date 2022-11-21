@@ -6,6 +6,7 @@ import morgan from "morgan"; //Middleware para revisar peticiones y errores HTTP
 import cors from "cors"; //Middleware para aceptar o rechazar peticiones HTTP
 import path from "path"; //Modulo que permite interactuar con rutas facilmente
 import mongoose from "mongoose"; //Biblioteca de POO para crear una conexion entre MongoDB y Node.js
+import router from "./routes"; //Importa el archivo de rutas
 
 //Conexion a la base de datos MongoDB
 mongoose.Promise = global.Promise;
@@ -24,6 +25,7 @@ app.use(express.json()); //Indicamos a nuestro backend que pueda recibir peticio
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/api", router);
 app.set("port", process.env.PORT || 3000);
 
 app.listen(app.get("port"), () => {
