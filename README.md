@@ -4,7 +4,9 @@ Repositorio del proyecto del curso desarrollo fullstack MEVN
 ![MEVN](https://miro.medium.com/max/1400/1*HgJ-L3_LdA8bR_I8pcMehQ.png)
 
 ## Pruebas categoria con postman
+
 Método HTTP |   URL |   Parámetros
+
 POST    |   http://localhost:3000/api/categoria/add |   Body -> nombre(string-50) , descripcion(String-255)
 
 GET |   http://localhost:3000/api/categoria/list    |   Query -> ?valor=texto
