@@ -3,9 +3,9 @@ import models from "../models";
 
 export default {
   add: async (req, res, next) => {
-    //permite agregar una categoria
+    //permite agregar un Articulo
     try {
-      const reg = await models.Categoria.create(req.body); //Recibe el objeto y crea el registro
+      const reg = await models.Articulo.create(req.body); //Recibe el objeto y crea el registro
       res.status(200).json(reg); //Devuelvo un ok y el registro
     } catch (e) {
       res.status(500).send({
@@ -16,9 +16,10 @@ export default {
     }
   },
   query: async (req, res, next) => {
-    //consultar una categoria
+    //consultar un Articulo
     try {
-      const reg = await models.Categoria.findOne({ _id: req.query._id }); //Busca la categoria con el id enviado en el query con el parametro req
+      const reg = await models.Articulo.findOne({ _id: req.query._id }) //Busca el Articulo con el id enviado en el query con el parametro req
+        .populate("categoria", { nombre: 1 }); //poblar articulos con su categoria respectiva
       if (!reg) {
         //Si no se encuentra el registro
         res.status(404).send({
@@ -36,13 +37,20 @@ export default {
     }
   },
   list: async (req, res, next) => {
-    //Enlistar categoria
+    //Enlistar Articulo
     try {
       let valor = req.query.valor;
-      const reg = await models.Categoria.find(
-        {$or:[{ nombre: new RegExp(valor, "i") }, { descripcion: new RegExp(valor, "i") }]}, //Agregamos que busque en el nombre o en descripcion
+      const reg = await models.Articulo.find(
+        {
+          $or: [
+            { nombre: new RegExp(valor, "i") },
+            { descripcion: new RegExp(valor, "i") },
+          ],
+        }, //Agregamos que busque en el nombre o en descripcion
         { createdAt: 0 }
-      ).sort({ createdAt: -1 }); //Ordenamos de forma descentente con -1, usar 1 para forma ascendente
+      )
+        .populate("categoria", { nombre: 1 }) //poblar articulos con su categoria respectiva
+        .sort({ createdAt: -1 }); //Ordenamos de forma descentente con -1, usar 1 para forma ascendente
       res.status(200).json(reg);
     } catch (e) {
       res.status(500).send({
@@ -52,11 +60,18 @@ export default {
     }
   },
   update: async (req, res, next) => {
-    //Actualizar los datos de una categoria especifica
+    //Actualizar los datos de un Articulo especifico
     try {
-      const reg = await models.Categoria.findByIdAndUpdate(
+      const reg = await models.Articulo.findByIdAndUpdate(
         { _id: req.body._id }, //Parametro de busqueda
-        { nombre: req.body.nombre, descripcion: req.body.descripcion } //Parametro de valores a cambiar en el registro
+        {
+          categoria: req.body.categoria,
+          codigo: req.body.codigo,
+          nombre: req.body.nombre,
+          descripcion: req.body.descripcion,
+          precio_venta: req.body.precio_venta,
+          stock: req.body.stock,
+        } //Parametro de valores a cambiar en el registro
       );
       res.status(200).json(reg);
     } catch (e) {
@@ -69,7 +84,7 @@ export default {
   remove: async (req, res, next) => {
     //Eliminar un registro
     try {
-      const reg = await models.Categoria.findByIdAndDelete({
+      const reg = await models.Articulo.findByIdAndDelete({
         _id: req.body._id,
       });
       res.status(200).json(reg);
@@ -81,9 +96,9 @@ export default {
     }
   },
   activate: async (req, res, next) => {
-    //Activar una categoria desactivada
+    //Activar un Articulo desactivado
     try {
-      const reg = await models.Categoria.findByIdAndUpdate(
+      const reg = await models.Articulo.findByIdAndUpdate(
         { _id: req.body._id },
         { estado: 1 } //Valor a actualizar
       );
@@ -96,9 +111,9 @@ export default {
     }
   },
   deactivate: async (req, res, next) => {
-    //Desactivar una categoria activada
+    //Desactivar un Articulo activado
     try {
-      const reg = await models.Categoria.findByIdAndUpdate(
+      const reg = await models.Articulo.findByIdAndUpdate(
         { _id: req.body._id },
         { estado: 0 } //Valor a actualizar
       );
