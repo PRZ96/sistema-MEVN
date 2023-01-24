@@ -1,15 +1,15 @@
 import routerx from "express-promise-router";
-import CategoriaController from "../controllers/CategoriaController";
+import categoriaController from "../controllers/CategoriaController";
 
 const router = routerx();
 
-//Rutas para todas las funciones de nuestro controlador CategoriaController
-router.post("/add", CategoriaController.add);
-router.get("/query", CategoriaController.query);
-router.get("/list", CategoriaController.list);
-router.put("/update", CategoriaController.update);
-router.delete("/remove", CategoriaController.remove);
-router.put("/activate", CategoriaController.activate);
-router.put("/deactivate", CategoriaController.deactivate);
+//Rutas para todas las funciones de nuestro controlador categoriaController
+router.post("/add", categoriaController.add);
+router.get("/query", categoriaController.query);
+router.get("/list", categoriaController.list);
+router.put("/update", categoriaController.update);
+router.delete("/remove", categoriaController.remove);
+router.put("/activate", categoriaController.activate);
+router.put("/deactivate", categoriaController.deactivate);
 
 export default router;
