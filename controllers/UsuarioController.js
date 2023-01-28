@@ -132,4 +132,30 @@ export default {
       next(e);
     }
   },
+  login: async (req, res, next) => {
+    try {
+      let user = await models.Usuario.findOne({ email: req.body.email }); //Buscamos el usuario por el email ingresado
+      if (user) {
+        //Si existe el usuario con ese email
+        let match = await bcrypt.compare(req.body.password, user.password); //Compara la contraseña ingresada con la actual
+        if (match) {
+          //Si coinciden las contraseñas
+          res.json("Password correcto");
+        } else {
+          res.status(404).send({
+            message: "Password incorrecto",
+          });
+        }
+      } else {
+        res.status(404).send({
+          message: "No existe el usuario",
+        });
+      }
+    } catch (e) {
+      res.status(500).send({
+        message: "Ocurrio un error",
+      });
+      next(e);
+    }
+  },
 };
