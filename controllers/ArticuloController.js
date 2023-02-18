@@ -1,4 +1,3 @@
-import { model } from "mongoose";
 import models from "../models";
 
 export default {
