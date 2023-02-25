@@ -35,6 +35,27 @@ export default {
       next(e);
     }
   },
+  queryCodigo: async (req, res, next) => {
+    //consultar un Articulo por codigo de barras
+    try {
+      const reg = await models.Articulo.findOne({ codigo: req.query.codigo }) //Busca el Articulo con el codigo de barras enviado en el query con el parametro req
+        .populate("categoria", { nombre: 1 }); //poblar articulos con su categoria respectiva
+      if (!reg) {
+        //Si no se encuentra el registro
+        res.status(404).send({
+          //respondemos con error de no encontrado y el mensaje
+          message: "El registro no existe",
+        });
+      } else {
+        res.status(200).json(reg); //Devolvemos ok
+      }
+    } catch (e) {
+      res.status(500).send({
+        message: "Ocurrio un error",
+      });
+      next(e);
+    }
+  },
   list: async (req, res, next) => {
     //Enlistar Articulo
     try {
