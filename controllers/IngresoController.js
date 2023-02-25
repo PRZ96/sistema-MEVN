@@ -1,10 +1,28 @@
 import models from "../models";
 
+async function aumentarStock(idarticulo, cantidad) {
+  let { stock } = await models.Articulo.findOne({ _id: idarticulo }); //Obtener el stock de ese articulo
+  let nStock = parseInt(stock) + parseInt(cantidad); //Sumar el antiguo stock, con el nuevo stock
+  const reg = await models.Articulo.findByIdAndUpdate({ _id: idarticulo }, { stock: nStock }); //Actualizar el stock anterior con el nuevo stock
+}
+
+async function disminuirStock(idarticulo, cantidad) {
+    let { stock } = await models.Articulo.findOne({ _id: idarticulo }); //Obtener el stock de ese articulo
+    let nStock = parseInt(stock) - parseInt(cantidad); //Restar el antiguo stock, con el nuevo stock
+    const reg = await models.Articulo.findByIdAndUpdate({ _id: idarticulo }, { stock: nStock }); //Actualizar el stock anterior con el nuevo stock
+  }
+
 export default {
   add: async (req, res, next) => {
     //permite agregar un ingreso
     try {
       const reg = await models.Ingreso.create(req.body); //Recibe el objeto y crea el registro
+      // Actualizar Stock
+      let detalles = req.body.detalles;
+      detalles.map(function (x) {
+        //Recorrer el array y trabajar cada objeto como x
+        aumentarStock(x._id, x.cantidad);
+      });
       res.status(200).json(reg); //Devuelvo un ok y el registro
     } catch (e) {
       res.status(500).send({
@@ -91,6 +109,12 @@ export default {
         { _id: req.body._id },
         { estado: 1 } //Valor a actualizar
       );
+      // Actualizar Stock
+      let detalles = reg.detalles;
+      detalles.map(function (x) {
+        //Recorrer el array y trabajar cada objeto como x
+        aumentarStock(x._id, x.cantidad);
+      });
       res.status(200).json(reg);
     } catch (e) {
       res.status(500).send({
@@ -106,6 +130,12 @@ export default {
         { _id: req.body._id },
         { estado: 0 } //Valor a actualizar
       );
+      // Actualizar Stock
+      let detalles = reg.detalles;
+      detalles.map(function (x) {
+        //Recorrer el array y trabajar cada objeto como x
+        disminuirStock(x._id, x.cantidad);
+      });
       res.status(200).json(reg);
     } catch (e) {
       res.status(500).send({
