@@ -31,4 +31,4 @@ const ingresoSchema = new Schema({
 });
 
 const Ingreso = mongoose.model("ingreso", ingresoSchema);
-export default ingreso;
+export default Ingreso;
