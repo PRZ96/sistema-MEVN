@@ -14,14 +14,14 @@ async function disminuirStock(idarticulo, cantidad) {
 
 export default {
   add: async (req, res, next) => {
-    //permite agregar un ingreso
+    //permite agregar un venta
     try {
-      const reg = await models.Ingreso.create(req.body); //Recibe el objeto y crea el registro
+      const reg = await models.Venta.create(req.body); //Recibe el objeto y crea el registro
       // Actualizar Stock
       let detalles = req.body.detalles;
       detalles.map(function (x) {
         //Recorrer el array y trabajar cada objeto como x
-        aumentarStock(x._id, x.cantidad);
+        disminuirStock(x._id, x.cantidad);
       });
       res.status(200).json(reg); //Devuelvo un ok y el registro
     } catch (e) {
@@ -35,7 +35,7 @@ export default {
   query: async (req, res, next) => {
     //consultar una categoria
     try {
-      const reg = await models.Ingreso.findOne({ _id: req.query._id }) //Busca el ingreso con el id enviado en el query con el parametro req
+      const reg = await models.Venta.findOne({ _id: req.query._id }) //Busca el venta con el id enviado en el query con el parametro req
         .populate("usuario", { nombre: 1 })
         .populate("persona", { nombre: 1 });
       if (!reg) {
@@ -55,10 +55,10 @@ export default {
     }
   },
   list: async (req, res, next) => {
-    //Enlistar ingresos
+    //Enlistar ventas
     try {
       let valor = req.query.valor;
-      const reg = await models.Ingreso.find(
+      const reg = await models.Venta.find(
         {$or:[{ num_comprobante: new RegExp(valor, "i") }, { serie_comprobante: new RegExp(valor, "i") }]}) //Agregamos que busque en el numero de comprobante o en serie del comprobante
         .populate("usuario", { nombre: 1 })
         .populate("persona", { nombre: 1 })
@@ -71,11 +71,11 @@ export default {
       next(e);
     }
   },
-  /* Como no se deben eliminar o modificar los ingresos, deshabilito las siguientes funciones update y remove */
+  /* Como no se deben eliminar o modificar los ventas, deshabilito las siguientes funciones update y remove */
 /*   update: async (req, res, next) => {
-    //Actualizar los datos de un ingreso especifico
+    //Actualizar los datos de un venta especifico
     try {
-      const reg = await models.Ingreso.findByIdAndUpdate(
+      const reg = await models.Venta.findByIdAndUpdate(
         { _id: req.body._id }, //Parametro de busqueda
         { nombre: req.body.nombre, descripcion: req.body.descripcion } //Parametro de valores a cambiar en el registro
       );
@@ -88,9 +88,9 @@ export default {
     }
   },
   remove: async (req, res, next) => {
-    //Eliminar un ingreso
+    //Eliminar un venta
     try {
-      const reg = await models.Ingreso.findByIdAndDelete({
+      const reg = await models.Venta.findByIdAndDelete({
         _id: req.body._id,
       });
       res.status(200).json(reg);
@@ -102,9 +102,9 @@ export default {
     }
   }, */
   activate: async (req, res, next) => {
-    //Activar una ingreso desactivada
+    //Activar una venta desactivada
     try {
-      const reg = await models.Ingreso.findByIdAndUpdate(
+      const reg = await models.Venta.findByIdAndUpdate(
         { _id: req.body._id },
         { estado: 1 } //Valor a actualizar
       );
@@ -112,7 +112,7 @@ export default {
       let detalles = reg.detalles;
       detalles.map(function (x) {
         //Recorrer el array y trabajar cada objeto como x
-        aumentarStock(x._id, x.cantidad);
+        disminuirStock(x._id, x.cantidad);
       });
       res.status(200).json(reg);
     } catch (e) {
@@ -123,9 +123,9 @@ export default {
     }
   },
   deactivate: async (req, res, next) => {
-    //Desactivar un ingreso activada
+    //Desactivar un venta activada
     try {
-      const reg = await models.Ingreso.findByIdAndUpdate(
+      const reg = await models.Venta.findByIdAndUpdate(
         { _id: req.body._id },
         { estado: 0 } //Valor a actualizar
       );
@@ -133,7 +133,7 @@ export default {
       let detalles = reg.detalles;
       detalles.map(function (x) {
         //Recorrer el array y trabajar cada objeto como x
-        disminuirStock(x._id, x.cantidad);
+        aumentarStock(x._id, x.cantidad);
       });
       res.status(200).json(reg);
     } catch (e) {
