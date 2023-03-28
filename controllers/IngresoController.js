@@ -174,4 +174,21 @@ export default {
       next(e);
     }
   },
+  consultaFechas: async (req, res, next) => {
+    //Enlistar ingresos
+    try {
+      let start = req.query.start; //Fecha de inicio enviada desde el front end
+      let end = req.query.end; //Fecha de fin enviada desde el front end
+      const reg = await models.Ingreso.find({ "createdAt": {"$gte": start, "$lt": end }}) //Se define el rango de inicio a fin
+        .populate("usuario", { nombre: 1 })
+        .populate("persona", { nombre: 1 })
+        .sort({ createdAt: -1 }); //Ordenamos de forma descentente con -1, usar 1 para forma ascendente
+      res.status(200).json(reg);
+    } catch (e) {
+      res.status(500).send({
+        message: "Ocurrio un error",
+      });
+      next(e);
+    }
+  },
 };
