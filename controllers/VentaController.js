@@ -58,8 +58,12 @@ export default {
     //Enlistar ventas
     try {
       let valor = req.query.valor;
-      const reg = await models.Venta.find(
-        {$or:[{ num_comprobante: new RegExp(valor, "i") }, { serie_comprobante: new RegExp(valor, "i") }]}) //Agregamos que busque en el numero de comprobante o en serie del comprobante
+      const reg = await models.Venta.find({
+        $or: [
+          { num_comprobante: new RegExp(valor, "i") },
+          { serie_comprobante: new RegExp(valor, "i") },
+        ],
+      }) //Agregamos que busque en el numero de comprobante o en serie del comprobante
         .populate("usuario", { nombre: 1 })
         .populate("persona", { nombre: 1 })
         .sort({ createdAt: -1 }); //Ordenamos de forma descentente con -1, usar 1 para forma ascendente
@@ -72,7 +76,7 @@ export default {
     }
   },
   /* Como no se deben eliminar o modificar los ventas, deshabilito las siguientes funciones update y remove */
-/*   update: async (req, res, next) => {
+  /*   update: async (req, res, next) => {
     //Actualizar los datos de un venta especifico
     try {
       const reg = await models.Venta.findByIdAndUpdate(
@@ -135,6 +139,37 @@ export default {
         //Recorrer el array y trabajar cada objeto como x
         aumentarStock(x._id, x.cantidad);
       });
+      res.status(200).json(reg);
+    } catch (e) {
+      res.status(500).send({
+        message: "Ocurrio un error",
+      });
+      next(e);
+    }
+  },
+  grafico12Meses: async (req, res, next) => {
+    try {
+      const reg = await models.Venta.aggregate([
+        {
+          $group: {
+            //Propiedad de mongoose para agrupar
+            _id: {
+              mes: { $month: "$createdAt" },
+              year: { $year: "$createdAt" },
+            },
+            total: { $sum: "$total" },
+            numero: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            //Propiedad de mongoose para ordenar los registros una vez agrupados
+            "_id.year": -1,
+            "_id.mes": -1,
+          },
+        },
+      ]).limit(12);
+      
       res.status(200).json(reg);
     } catch (e) {
       res.status(500).send({
